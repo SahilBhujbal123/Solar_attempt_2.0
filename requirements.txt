@@ -3,4 +3,4 @@ scikit-learn >= 1.4.0
 keras == 3.0.5
 numpy
 keras 
-cv2
+opencv
