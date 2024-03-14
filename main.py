@@ -1,5 +1,6 @@
 import numpy as np
-import cv2
+from PIL import Image
+import io
 import keras
 from pathlib import Path
 from fastapi import FastAPI, UploadFile, File
@@ -12,15 +13,21 @@ imageshape = (130, 130)
 BASE_DIR = Path(__file__).resolve(strict=True).parent 
 cnn = keras.models.load_model(BASE_DIR / "130pxCNN.keras")
 
-def read_image(image_encoded: bytes) -> np.array:
-    image = cv2.imdecode(np.frombuffer(image_encoded, np.uint8), -1)
+def read_image(image_encoded: bytes, imageshape: tuple) -> np.array:
+
+    # Open the image from bytes
+    image = Image.open(io.BytesIO(image_encoded))
+    # Convert image to numpy array
+    image = np.array(image)
     if image is None:
         raise ValueError("Failed to read image.")
     # preprocess
     image = image[:, :, :3]                            
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  
-    image = cv2.resize(image, imageshape)                
-    return image / 255 
+    image = np.array(Image.fromarray(image).convert('RGB'))  
+    image = np.array(Image.fromarray(image).resize(imageshape))
+    
+    return image / 255
+ 
 
 def predict_solar(image: np.array) -> np.array:
     prediction = cnn.predict(np.expand_dims(image, 0))
@@ -37,7 +44,7 @@ async def predict(file: UploadFile = File(...)):
     if not extension:
         return "Image must be jpg or png format!"
     try:
-        image = read_image(await file.read())
+        image = read_image(await file.read(), imageshape)
         prediction = predict_solar(image)
         return {"prediction": prediction[0][0].tolist()}
     except Exception as e:
