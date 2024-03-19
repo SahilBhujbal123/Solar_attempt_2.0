@@ -35,7 +35,7 @@ def predict_solar(image: np.array) -> np.array:
 
 @app.get("/")
 async def home():
-    return {"message": "Welcome to the API!"}
+    return {"message": "Welcome to the API! 150px_3"}
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
