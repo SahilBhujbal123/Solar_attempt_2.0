@@ -8,10 +8,10 @@ from fastapi import FastAPI, UploadFile, File
 
 app = FastAPI()
 
-imageshape = (130, 130)
+imageshape = (150, 150)
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent 
-cnn = keras.models.load_model(BASE_DIR / "130pxCNN.keras")
+cnn = keras.models.load_model(BASE_DIR / "150pxmodel_3.0.keras")
 
 def read_image(image_encoded: bytes, imageshape: tuple) -> np.array:
 
