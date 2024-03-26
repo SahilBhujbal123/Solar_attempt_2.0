@@ -8,10 +8,10 @@ from fastapi import FastAPI, UploadFile, File
 
 app = FastAPI()
 
-imageshape = (150, 150)
+imageshape = (200, 200)
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent 
-cnn = keras.models.load_model(BASE_DIR / "150pxmodel_3.0.keras")
+cnn = keras.models.load_model(BASE_DIR / "200pxmodel.keras")
 
 def read_image(image_encoded: bytes, imageshape: tuple) -> np.array:
 
@@ -24,7 +24,7 @@ def read_image(image_encoded: bytes, imageshape: tuple) -> np.array:
     # preprocess
     image = image[:, :, :3]                            
     image = np.array(Image.fromarray(image).convert('RGB'))  
-    image = np.array(Image.fromarray(image).resize(imageshape))
+    image = np.array(Image.fromarray(image).resize((imageshape), resample=Image.BILINEAR))
     
     return image / 255
  
